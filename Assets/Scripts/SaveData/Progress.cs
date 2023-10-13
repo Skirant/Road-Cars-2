@@ -4,6 +4,7 @@ public class Progress : MonoBehaviour
 {
     public int Coins;
     public int Weight;
+    public int HealthBarrir;
 
     public static Progress Instance;
 

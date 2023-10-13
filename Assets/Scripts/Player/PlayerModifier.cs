@@ -3,7 +3,8 @@ using UnityEngine;
 public class PlayerModifier : MonoBehaviour
 {
     [SerializeField] int _weight;
-    [SerializeField] int _damage;
+    //[SerializeField] int _damage;
+    //[SerializeField] int _healthPlayer;
 
     public int Weight
     {
@@ -31,17 +32,28 @@ public class PlayerModifier : MonoBehaviour
 
     public void SetWeight(int value)
     {
-        _weight = value;
+        if(value <= 0) 
+        {
+            _weight = 1;
+        }
+        else
+        {
+            _weight = value;
+        }
     }
 
     [System.Obsolete]
-    public void HitBarrier()
+    public int HitBarrier(int barrierHealth)
     {
-        if (_weight > 0)
-        {
-            _weight -= _damage;
-        }
-        else
+        int damageToBarrier = Mathf.Min(_weight, barrierHealth);
+        return damageToBarrier;
+    }
+
+    [System.Obsolete]
+    public void TakeDamage(int damage)
+    {
+        _weight -= damage;
+        if (_weight <= 0)
         {
             Die();
         }
