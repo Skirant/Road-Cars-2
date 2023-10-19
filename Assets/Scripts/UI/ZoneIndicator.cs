@@ -12,6 +12,9 @@ public class ZoneIndicator : MonoBehaviour
     public float maxPositionX;
     private float startTime;
 
+    public CoinManager coinManager;
+    public float[] zoneMultipliers;
+
     private void Start()
     {
         startTime = Time.time;
@@ -45,5 +48,26 @@ public class ZoneIndicator : MonoBehaviour
         float t = (Time.time - startTime) * speed;
         float newXPosition = Mathf.Lerp(minPositionX, maxPositionX, Mathf.PingPong(t, 1));
         pointer.anchoredPosition = new Vector2(newXPosition, pointer.anchoredPosition.y);
+    }
+
+    public void OnButtonClick()
+    {
+        float minDistance = float.MaxValue;
+        int closestZoneIndex = -1;
+
+        for (int i = 0; i < zones.Length; i++)
+        {
+            float distance = Mathf.Abs(pointer.anchoredPosition.x - zones[i].anchoredPosition.x);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                closestZoneIndex = i;
+            }
+        }
+
+        if (closestZoneIndex != -1)
+        {
+            coinManager.MultiplyMoney(zoneMultipliers[closestZoneIndex]);
+        }
     }
 }

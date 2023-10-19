@@ -4,17 +4,21 @@ using UnityEngine;
 public class CoinManager : MonoBehaviour
 {
     public int NumberOfCoins;
+    public int CoinsAddInLevel;
+    public int RealCoinInThisLevel;
     [SerializeField] TextMeshProUGUI _textCoin;
 
     private void Start()
     {
         NumberOfCoins = Progress.Instance.Coins;
+        RealCoinInThisLevel = Progress.Instance.Coins;
         MoneyUpdate();
     }
 
     public void AddOne()
     {
-        NumberOfCoins += 1;
+        RealCoinInThisLevel += 1;
+        CoinsAddInLevel += 1;
         MoneyUpdate();
     }
 
@@ -29,8 +33,15 @@ public class CoinManager : MonoBehaviour
         MoneyUpdate();
     }
 
+    public void MultiplyMoney(float multiplier)
+    {
+        CoinsAddInLevel = Mathf.RoundToInt(CoinsAddInLevel * multiplier);
+        NumberOfCoins += CoinsAddInLevel;
+        _textCoin.text = NumberOfCoins.ToString();
+    }
+
     public void MoneyUpdate()
     {
-        _textCoin.text = NumberOfCoins.ToString();
+        _textCoin.text = RealCoinInThisLevel.ToString();
     }
 }

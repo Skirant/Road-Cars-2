@@ -1,8 +1,10 @@
+using TMPro;
 using UnityEngine;
 
 public class PlayerModifier : MonoBehaviour
 {
     [SerializeField] int _weight;
+    [SerializeField] TextMeshProUGUI _textWeight;
     //[SerializeField] int _damage;
     //[SerializeField] int _healthPlayer;
 
@@ -27,6 +29,9 @@ public class PlayerModifier : MonoBehaviour
     public void AddWeight(int value)
     {
         _weight += value;
+
+        TextWeight();
+
         print("ZALUPA");
     }
 
@@ -40,6 +45,8 @@ public class PlayerModifier : MonoBehaviour
         {
             _weight = value;
         }
+
+        TextWeight();
     }
 
     [System.Obsolete]
@@ -64,5 +71,44 @@ public class PlayerModifier : MonoBehaviour
     {
         FindObjectOfType<GameManager>().ShowFinishWindow();
         Destroy(gameObject);
+    }
+
+    private void TextWeight()
+    {
+        _textWeight.text = FormatWeight(_weight);
+    }
+
+    private string FormatWeight(int value)
+    {
+        float floatValue = value;
+        string formattedValue;
+        float absValue = Mathf.Abs(floatValue);
+
+        if (absValue >= 1000000000)
+        {
+            floatValue /= 1000000;
+            formattedValue = floatValue.ToString("F1") + "B";
+        }
+        else if (absValue >= 1000000)
+        {
+            floatValue /= 1000000;
+            formattedValue = floatValue.ToString("F1") + "M";
+        }
+        else if (absValue >= 100000)
+        {
+            floatValue /= 100000;
+            formattedValue = floatValue.ToString("F1") + "KK";
+        }
+        else if (absValue >= 1000)
+        {
+            floatValue /= 1000;
+            formattedValue = floatValue.ToString("F1") + "K";
+        }
+        else
+        {
+            formattedValue = floatValue.ToString("F1");
+        }
+
+        return formattedValue;
     }
 }
