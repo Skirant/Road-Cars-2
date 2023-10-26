@@ -8,6 +8,8 @@ public class CoinManager : MonoBehaviour
     public int RealCoinInThisLevel;
     [SerializeField] TextMeshProUGUI _textCoin;
 
+    [SerializeField] int _priceCoin = 10;
+
     private void Start()
     {
         NumberOfCoins = Progress.Instance.Coins;
@@ -15,10 +17,15 @@ public class CoinManager : MonoBehaviour
         MoneyUpdate();
     }
 
+    public void UpdatePriceCoin(float multiplier)
+    {
+        _priceCoin = Mathf.RoundToInt(_priceCoin * multiplier);
+    }
+
     public void AddOne()
     {
-        RealCoinInThisLevel += 1;
-        CoinsAddInLevel += 1;
+        RealCoinInThisLevel += _priceCoin;
+        CoinsAddInLevel += _priceCoin;
         MoneyUpdate();
     }
 
@@ -29,7 +36,11 @@ public class CoinManager : MonoBehaviour
 
     public void SpendMoney(int value)
     {
-        NumberOfCoins -= value;
+        if(RealCoinInThisLevel >= value)
+        {
+            NumberOfCoins -= value;
+            RealCoinInThisLevel -= value;
+        }        
         MoneyUpdate();
     }
 
@@ -37,11 +48,45 @@ public class CoinManager : MonoBehaviour
     {
         CoinsAddInLevel = Mathf.RoundToInt(CoinsAddInLevel * multiplier);
         NumberOfCoins += CoinsAddInLevel;
-        _textCoin.text = NumberOfCoins.ToString();
+        _textCoin.text = FormatWeight(NumberOfCoins);
     }
 
     public void MoneyUpdate()
     {
-        _textCoin.text = RealCoinInThisLevel.ToString();
+        _textCoin.text = FormatWeight(RealCoinInThisLevel);
+    }
+
+    private string FormatWeight(int value)
+    {
+        float floatValue = value;
+        string formattedValue;
+        float absValue = Mathf.Abs(floatValue);
+
+        if (absValue >= 1000000000)
+        {
+            floatValue /= 1000000;
+            formattedValue = floatValue.ToString("F1") + "B";
+        }
+        else if (absValue >= 1000000)
+        {
+            floatValue /= 1000000;
+            formattedValue = floatValue.ToString("F1") + "M";
+        }
+        else if (absValue >= 100000)
+        {
+            floatValue /= 100000;
+            formattedValue = floatValue.ToString("F1") + "KK";
+        }
+        else if (absValue >= 1000)
+        {
+            floatValue /= 1000;
+            formattedValue = floatValue.ToString("F1") + "K";
+        }
+        else
+        {
+            formattedValue = floatValue.ToString("F1");
+        }
+
+        return formattedValue;
     }
 }

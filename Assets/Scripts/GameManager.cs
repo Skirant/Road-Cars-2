@@ -1,30 +1,23 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] GameObject _startMenu;
     [SerializeField] GameObject _finishWindow;
 
-    [SerializeField] TextMeshProUGUI _textLevel;
+    [SerializeField] TextMeshProUGUI _textLevel;   
 
-    [SerializeField] CoinManager _coinManager;
+    [SerializeField] int _level;
 
     private bool isButtonHeld;
 
     private void Start()
     {
-        _textLevel.text = SceneManager.GetActiveScene().name;
-    }
-
-    [System.Obsolete]
-    /*public void Play()
-    {
-        _startMenu.SetActive(false);
-        FindObjectOfType<PlayerBehaviour>().Play();
-    }*/
+        _level = Progress.Instance.LevelNumber;
+        _textLevel.text = "LEVEL " + _level.ToString();
+    }    
 
     public void ShowFinishWindow()
     {
@@ -33,13 +26,19 @@ public class GameManager : MonoBehaviour
 
     public void NextLevel()
     {
-        int next = SceneManager.GetActiveScene().buildIndex + 1;
+        _level += 1;        
+        StartCoroutine(RestartLevelWithDelay(2.0f));
+    }
 
-        if(next < SceneManager.sceneCountInBuildSettings)
-        {
-            _coinManager.SaveToProgress();
+    private IEnumerator RestartLevelWithDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Progress.Instance.LevelNumber = _level;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
 
-            SceneManager.LoadScene(next);
-        }        
+    public int GetCurrentLevel()
+    {
+        return _level;
     }
 }

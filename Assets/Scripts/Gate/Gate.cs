@@ -17,6 +17,11 @@ public class Gate : MonoBehaviour
         _gateAppearaence.UpdateVisual(_defrmationType, _value);
     }
 
+    private void Awake()
+    {
+        progress = FindAnyObjectByType<Progress>();
+    }
+
     private void Start()
     {
         GenerateRandomValue();

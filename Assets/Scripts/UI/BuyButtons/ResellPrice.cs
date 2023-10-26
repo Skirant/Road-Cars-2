@@ -7,10 +7,13 @@ public class ResellPrice : MonoBehaviour
 {
     public TextMeshProUGUI priceText;
     public TextMeshProUGUI multiplierText;
+
     public Button increaseButton;
 
+    public CoinManager coinManager;
+
     private float price = 100.0f;
-    private float multiplier = 1.0f;
+    private float multiplier = 1.1f;
 
     private void Start()
     {
@@ -20,9 +23,14 @@ public class ResellPrice : MonoBehaviour
 
     private void OnButtonClick()
     {
-        multiplier += 0.05f;
-        price *= 2.5f;
-        UpdateTexts();
+        if (coinManager.RealCoinInThisLevel >= (int)price)
+        {
+            coinManager.SpendMoney((int)price);
+            coinManager.UpdatePriceCoin(multiplier);
+            multiplier += 0.1f;
+            price *= 2.5f;            
+            UpdateTexts();
+        }
     }
 
     private string FormatPrice(float value)

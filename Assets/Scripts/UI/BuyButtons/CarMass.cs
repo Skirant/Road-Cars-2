@@ -11,6 +11,7 @@ public class CarMass : MonoBehaviour
     public Button increaseButton;
 
     public PlayerModifier playerModifier;
+    public CoinManager coinManager;
 
     private float price = 100.0f;
     private float multiplier = 1.0f;
@@ -23,10 +24,14 @@ public class CarMass : MonoBehaviour
 
     private void OnButtonClick()
     {
-        playerModifier.AddWeight((int)multiplier);
-        multiplier *= 2.25f;
-        price *= 2f;
-        UpdateTexts();
+        if (coinManager.RealCoinInThisLevel >= (int)price)
+        {
+            coinManager.SpendMoney((int)price);
+            playerModifier.AddWeight((int)multiplier);
+            multiplier *= 2.25f;
+            price *= 2f;
+            UpdateTexts();
+        }
     }
 
     private string FormatPrice(float value)
