@@ -40,7 +40,7 @@ public class GateSpawner : MonoBehaviour
             return;
         }
 
-        int currentLevel = FindObjectOfType<GameManager>().GetCurrentLevel();
+        int currentLevel = Progress.Instance.LevelNumber; // Используйте LevelNumber из Progress
         bool isEvenLevel = currentLevel % 2 == 0;
         int specialPrefabSpawnPointIndex = isEvenLevel ? Random.Range(3, spawnPoints.Count) : -1;
 
@@ -56,6 +56,10 @@ public class GateSpawner : MonoBehaviour
             else
             {
                 int randomPrefabIndex = GetRandomPrefabIndex();
+                while (!isEvenLevel && prefabs[randomPrefabIndex] == specialPrefab)
+                {
+                    randomPrefabIndex = GetRandomPrefabIndex();
+                }
                 randomPrefab = prefabs[randomPrefabIndex];
                 lastSpawnedPrefabIndex = randomPrefabIndex;
             }
@@ -79,3 +83,4 @@ public class GateSpawner : MonoBehaviour
         return randomIndex;
     }
 }
+

@@ -11,11 +11,12 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] int _level;
 
-    private bool isButtonHeld;
-
     private void Start()
     {
         _level = Progress.Instance.LevelNumber;
+
+        Debug.Log("Current level: " + _level);
+
         _textLevel.text = "LEVEL " + _level.ToString();
     }    
 
@@ -35,10 +36,5 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
         Progress.Instance.LevelNumber = _level;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
-
-    public int GetCurrentLevel()
-    {
-        return _level;
-    }
+    }    
 }

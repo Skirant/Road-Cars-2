@@ -6,6 +6,7 @@ public class PlayerBehaviour : MonoBehaviour
     [SerializeField] PreFinishBehavior _preFinishBehavior;
 
     [SerializeField] CameraMove _cameraMove;
+    [SerializeField] GameObject _slider;
 
     private void Start()
     {
@@ -16,6 +17,7 @@ public class PlayerBehaviour : MonoBehaviour
     public void Play()
     {
         _playerMove.enabled = true;
+        _slider.SetActive(true);
         _cameraMove.ChangeCameraPositionAndRotation();
     }
         
@@ -23,6 +25,8 @@ public class PlayerBehaviour : MonoBehaviour
     {
         _playerMove.enabled = false;
         _preFinishBehavior.enabled = true;
+
+        _slider.SetActive(false);
     }
 
     public void StartFinishBehavior()

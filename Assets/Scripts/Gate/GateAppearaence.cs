@@ -69,26 +69,26 @@ public class GateAppearaence : MonoBehaviour
         if (absValue >= 1000000000)
         {
             floatValue /= 1000000;
-            formattedValue = floatValue.ToString("F1") + "B";
+            formattedValue = floatValue.ToString("F0") + "B";
         }
         else if (absValue >= 1000000)
         {
             floatValue /= 1000000;
-            formattedValue = floatValue.ToString("F1") + "M";
+            formattedValue = floatValue.ToString("F0") + "M";
         }
         else if (absValue >= 100000)
         {
             floatValue /= 100000;
-            formattedValue = floatValue.ToString("F1") + "KK";
+            formattedValue = floatValue.ToString("F0") + "KK";
         }
         else if (absValue >= 1000)
         {
             floatValue /= 1000;
-            formattedValue = floatValue.ToString("F1") + "K";
+            formattedValue = floatValue.ToString("F0") + "K";
         }
         else
         {
-            formattedValue = floatValue.ToString("F1");
+            formattedValue = floatValue.ToString("F0");
         }
 
         if (isNegative)

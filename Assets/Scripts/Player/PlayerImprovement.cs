@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class CarPrefabInfo
@@ -9,10 +10,11 @@ public class CarPrefabInfo
 
 public class PlayerImprovement : MonoBehaviour
 {
-    public CarPrefabInfo[] carPrefabs; // массив с префабами машин
-    private GameObject currentCar; // ссылка на текущую машину
+    public CarPrefabInfo[] carPrefabs;
+    private GameObject currentCar;
     private PlayerModifier playerModifier;
     public GameObject standardCar;
+    public Slider progressSlider; // Новый слайдер
 
     private void Start()
     {
@@ -29,12 +31,17 @@ public class PlayerImprovement : MonoBehaviour
     {
         int weight = playerModifier.Weight;
         CarPrefabInfo selectedCarInfo = null;
+        CarPrefabInfo nextCarInfo = null;
 
-        foreach (CarPrefabInfo carInfo in carPrefabs)
+        for (int i = 0; i < carPrefabs.Length; i++)
         {
-            if (weight >= carInfo.weight)
+            if (weight >= carPrefabs[i].weight)
             {
-                selectedCarInfo = carInfo;
+                selectedCarInfo = carPrefabs[i];
+                if (i + 1 < carPrefabs.Length)
+                {
+                    nextCarInfo = carPrefabs[i + 1];
+                }
             }
             else
             {
@@ -47,17 +54,25 @@ public class PlayerImprovement : MonoBehaviour
             currentCar = selectedCarInfo.carPrefab;
             ChangeCarModel(currentCar);
         }
+
+        if (nextCarInfo != null)
+        {
+            progressSlider.maxValue = nextCarInfo.weight;
+            progressSlider.value = weight;
+        }
+        else
+        {
+            progressSlider.value = progressSlider.maxValue;
+        }
     }
 
     private void ChangeCarModel(GameObject newModelPrefab)
     {
-        // Удаляем все текущие дочерние объекты машины
         foreach (Transform child in standardCar.transform)
         {
             Destroy(child.gameObject);
         }
 
-        // Добавляем новую модель машины
         GameObject newModel = Instantiate(newModelPrefab, Vector3.zero, Quaternion.identity);
         newModel.transform.SetParent(standardCar.transform, false);
     }
