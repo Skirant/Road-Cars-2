@@ -69,5 +69,7 @@ public class ZoneIndicator : MonoBehaviour
         {
             coinManager.MultiplyMoney(zoneMultipliers[closestZoneIndex]);
         }
+
+
     }
 }

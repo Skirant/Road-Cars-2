@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] int _level;
 
+    public CoinManager coinManager;
+
     private void Start()
     {
         _level = Progress.Instance.LevelNumber;
@@ -27,7 +29,10 @@ public class GameManager : MonoBehaviour
 
     public void NextLevel()
     {
-        _level += 1;        
+        _level += 1;
+
+        coinManager.NoThanks();
+
         StartCoroutine(RestartLevelWithDelay(2.0f));
     }
 
@@ -35,6 +40,6 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         Progress.Instance.LevelNumber = _level;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);       
     }    
 }

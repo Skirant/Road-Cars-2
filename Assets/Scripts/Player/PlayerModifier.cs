@@ -27,7 +27,7 @@ public class PlayerModifier : MonoBehaviour
 
     public void SetWeight(int value)
     {
-        if(value <= 0) 
+        if (value <= 0)
         {
             _weight = 1;
         }
@@ -101,4 +101,6 @@ public class PlayerModifier : MonoBehaviour
 
         return formattedValue;
     }
+
+
 }

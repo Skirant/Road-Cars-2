@@ -76,4 +76,9 @@ public class PlayerImprovement : MonoBehaviour
         GameObject newModel = Instantiate(newModelPrefab, Vector3.zero, Quaternion.identity);
         newModel.transform.SetParent(standardCar.transform, false);
     }
+
+    public PlayerModifier GetPlayerModifier()
+    {
+        return playerModifier;
+    }
 }

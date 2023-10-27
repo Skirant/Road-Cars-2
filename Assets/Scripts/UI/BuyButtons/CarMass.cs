@@ -7,6 +7,7 @@ public class CarMass : MonoBehaviour
 {
     public TextMeshProUGUI priceText;
     public TextMeshProUGUI multiplierText;
+    public TextMeshProUGUI AdGet;
 
     public Button increaseButton;
 
@@ -16,6 +17,9 @@ public class CarMass : MonoBehaviour
     private float price = 100.0f;
     private float multiplier = 1.0f;
 
+    // Добавляем счетчик нажатий
+    private int clickCount = 0;
+
     private void Start()
     {
         UpdateTexts();
@@ -24,6 +28,9 @@ public class CarMass : MonoBehaviour
 
     private void OnButtonClick()
     {
+        // Увеличиваем счетчик при каждом нажатии
+        clickCount++;
+
         if (coinManager.RealCoinInThisLevel >= (int)price)
         {
             coinManager.SpendMoney((int)price);
@@ -31,6 +38,16 @@ public class CarMass : MonoBehaviour
             multiplier *= 2.25f;
             price *= 2f;
             UpdateTexts();
+        }
+
+        // Если нажатие второе, переключаем видимость TextMeshProUGUI
+        if (clickCount == 2)
+        {
+            priceText.gameObject.SetActive(false);
+            AdGet.gameObject.SetActive(true);
+
+            // Сбрасываем счетчик нажатий
+            clickCount = 0;
         }
     }
 
@@ -72,5 +89,10 @@ public class CarMass : MonoBehaviour
     {
         priceText.text = FormatPrice(price);
         multiplierText.text = "+" + FormatPrice(multiplier);
+    }
+
+    private void AdYandex()
+    {
+
     }
 }

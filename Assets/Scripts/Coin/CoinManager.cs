@@ -7,6 +7,7 @@ public class CoinManager : MonoBehaviour
     public int CoinsAddInLevel;
     public int RealCoinInThisLevel;
     [SerializeField] TextMeshProUGUI _textCoin;
+    [SerializeField] TextMeshProUGUI _bonusCoin;
 
     [SerializeField] int _priceCoin = 10;
 
@@ -27,12 +28,7 @@ public class CoinManager : MonoBehaviour
         RealCoinInThisLevel += _priceCoin;
         CoinsAddInLevel += _priceCoin;
         MoneyUpdate();
-    }
-
-    public void SaveToProgress()
-    {
-        Progress.Instance.Coins = NumberOfCoins;
-    }
+    }   
 
     public void SpendMoney(int value)
     {
@@ -44,11 +40,26 @@ public class CoinManager : MonoBehaviour
         MoneyUpdate();
     }
 
+    public void UpdateBonusCoinText()
+    {
+        _bonusCoin.text = FormatWeight(Mathf.RoundToInt(CoinsAddInLevel * _multiplier));
+    }
+
     public void MultiplyMoney(float multiplier)
     {
         CoinsAddInLevel = Mathf.RoundToInt(CoinsAddInLevel * multiplier);
         NumberOfCoins += CoinsAddInLevel;
         _textCoin.text = FormatWeight(NumberOfCoins);
+
+        SaveToProgress();
+    }
+
+    public void NoThanks()
+    {        
+        NumberOfCoins += CoinsAddInLevel;
+        _textCoin.text = FormatWeight(NumberOfCoins);
+
+        SaveToProgress();
     }
 
     public void MoneyUpdate()
@@ -88,5 +99,10 @@ public class CoinManager : MonoBehaviour
         }
 
         return formattedValue;
+    }
+
+    public void SaveToProgress()
+    {
+        Progress.Instance.Coins = NumberOfCoins;
     }
 }
