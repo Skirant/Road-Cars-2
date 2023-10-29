@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CoinManager : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class CoinManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI _bonusCoin;
 
     [SerializeField] int _priceCoin = 10;
+
+    public Button noThanksButton;
 
     private void Start()
     {
@@ -40,11 +43,6 @@ public class CoinManager : MonoBehaviour
         MoneyUpdate();
     }
 
-    public void UpdateBonusCoinText()
-    {
-        _bonusCoin.text = FormatWeight(Mathf.RoundToInt(CoinsAddInLevel * _multiplier));
-    }
-
     public void MultiplyMoney(float multiplier)
     {
         CoinsAddInLevel = Mathf.RoundToInt(CoinsAddInLevel * multiplier);
@@ -55,16 +53,24 @@ public class CoinManager : MonoBehaviour
     }
 
     public void NoThanks()
-    {        
+    {    
         NumberOfCoins += CoinsAddInLevel;
         _textCoin.text = FormatWeight(NumberOfCoins);
 
         SaveToProgress();
+
+        noThanksButton.interactable = false;
     }
 
     public void MoneyUpdate()
     {
         _textCoin.text = FormatWeight(RealCoinInThisLevel);
+    }
+
+    public void UpdateDisplayedCoins(float multiplier)
+    {
+        int displayCoins = Mathf.RoundToInt(CoinsAddInLevel * multiplier);
+        _bonusCoin.text = FormatWeight(displayCoins);
     }
 
     private string FormatWeight(int value)
@@ -76,26 +82,26 @@ public class CoinManager : MonoBehaviour
         if (absValue >= 1000000000)
         {
             floatValue /= 1000000;
-            formattedValue = floatValue.ToString("F1") + "B";
+            formattedValue = floatValue.ToString("F0") + "B";
         }
         else if (absValue >= 1000000)
         {
             floatValue /= 1000000;
-            formattedValue = floatValue.ToString("F1") + "M";
+            formattedValue = floatValue.ToString("F0") + "M";
         }
         else if (absValue >= 100000)
         {
             floatValue /= 100000;
-            formattedValue = floatValue.ToString("F1") + "KK";
+            formattedValue = floatValue.ToString("F0") + "KK";
         }
         else if (absValue >= 1000)
         {
             floatValue /= 1000;
-            formattedValue = floatValue.ToString("F1") + "K";
+            formattedValue = floatValue.ToString("F0") + "K";
         }
         else
         {
-            formattedValue = floatValue.ToString("F1");
+            formattedValue = floatValue.ToString("F0");
         }
 
         return formattedValue;

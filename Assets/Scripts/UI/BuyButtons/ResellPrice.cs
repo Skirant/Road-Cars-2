@@ -1,9 +1,10 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static CarMass;
 
 public class ResellPrice : MonoBehaviour
-{
+{  
     public TextMeshProUGUI priceText;
     public TextMeshProUGUI multiplierText;
     public TextMeshProUGUI AdGet;
@@ -12,16 +13,22 @@ public class ResellPrice : MonoBehaviour
 
     public CoinManager coinManager;
 
-    private float price = 100.0f;
-    private float multiplier = 1.1f;
+    private float priceResellPrice = 100.0f;
+    private float multiplierResellPrice = 1.1f;
 
     // Добавляем счетчик нажатий
     private int clickCount = 0;
 
+    public delegate void UpdateResellData(float priceResellPrice, float multiplierResellPrice);
+    public static event UpdateResellData OnUpdateResellData;
+
     private void Start()
-    {
-        UpdateTexts();
+    {   
+        priceResellPrice = Progress.Instance.ResellPricePrice;
+        multiplierResellPrice = Progress.Instance.ResellPriceMultiplier;
+
         increaseButton.onClick.AddListener(OnButtonClick);
+        UpdateTexts();
     }
 
     private void OnButtonClick()
@@ -29,23 +36,23 @@ public class ResellPrice : MonoBehaviour
         // Увеличиваем счетчик при каждом нажатии
         clickCount++;
 
-        if (coinManager.RealCoinInThisLevel >= (int)price)
+        if (coinManager.RealCoinInThisLevel >= (int)priceResellPrice)
         {
-            coinManager.SpendMoney((int)price);
-            coinManager.UpdatePriceCoin(multiplier);
-            multiplier += 0.1f;
-            price *= 2.5f;
+            coinManager.SpendMoney((int)priceResellPrice);
+            coinManager.UpdatePriceCoin(multiplierResellPrice);
+            multiplierResellPrice += 0.1f;
+            priceResellPrice *= 2.5f;
             UpdateTexts();
-        }
 
-        // Если нажатие второе, переключаем видимость TextMeshProUGUI
-        if (clickCount == 2)
-        {
-            priceText.gameObject.SetActive(false);
-            AdGet.gameObject.SetActive(true);
+            // Если нажатие второе, переключаем видимость TextMeshProUGUI
+            if (clickCount == 2)
+            {
+                priceText.gameObject.SetActive(false);
+                AdGet.gameObject.SetActive(true);
 
-            // Сбрасываем счетчик нажатий
-            clickCount = 0;
+                // Сбрасываем счетчик нажатий
+                clickCount = 0;
+            }
         }
     }
 
@@ -85,12 +92,12 @@ public class ResellPrice : MonoBehaviour
 
     private void UpdateTexts()
     {
-        priceText.text = FormatPrice(price);
-        multiplierText.text = "x" + multiplier.ToString("F2");
+        priceText.text = FormatPrice(priceResellPrice);
+        multiplierText.text = "x" + multiplierResellPrice.ToString("F2");
     }
 
-    private void AdYandex()
+    public void TriggerOnUpdateProgressDataResellPrice()
     {
-
+        OnUpdateResellData?.Invoke(priceResellPrice, multiplierResellPrice);
     }
 }

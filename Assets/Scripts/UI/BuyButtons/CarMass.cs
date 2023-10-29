@@ -14,16 +14,22 @@ public class CarMass : MonoBehaviour
     public PlayerModifier playerModifier;
     public CoinManager coinManager;
 
-    private float price = 100.0f;
-    private float multiplier = 1.0f;
+    private float priceCarMass = 100.0f;
+    private float multiplierCarMass = 1.0f;
 
     // Добавляем счетчик нажатий
     private int clickCount = 0;
 
+    public delegate void UpdateProgressData(float price, float multiplier);
+    public static event UpdateProgressData OnUpdateProgressData;
+
     private void Start()
-    {
-        UpdateTexts();
+    {       
+        priceCarMass = Progress.Instance.CarMassPrice;
+        multiplierCarMass = Progress.Instance.CarMassMultiplier;
+
         increaseButton.onClick.AddListener(OnButtonClick);
+        UpdateTexts();
     }
 
     private void OnButtonClick()
@@ -31,24 +37,25 @@ public class CarMass : MonoBehaviour
         // Увеличиваем счетчик при каждом нажатии
         clickCount++;
 
-        if (coinManager.RealCoinInThisLevel >= (int)price)
+        if (coinManager.RealCoinInThisLevel >= (int)priceCarMass)
         {
-            coinManager.SpendMoney((int)price);
-            playerModifier.AddWeight((int)multiplier);
-            multiplier *= 2.25f;
-            price *= 2f;
+            coinManager.SpendMoney((int)priceCarMass);
+            playerModifier.AddWeight((int)multiplierCarMass);
+            playerModifier.AddWeightGate((int)multiplierCarMass);
+            multiplierCarMass *= 2.25f;
+            priceCarMass *= 2f;
             UpdateTexts();
-        }
 
-        // Если нажатие второе, переключаем видимость TextMeshProUGUI
-        if (clickCount == 2)
-        {
-            priceText.gameObject.SetActive(false);
-            AdGet.gameObject.SetActive(true);
+            // Если нажатие второе, переключаем видимость TextMeshProUGUI
+            if (clickCount == 2)
+            {
+                priceText.gameObject.SetActive(false);
+                AdGet.gameObject.SetActive(true);
 
-            // Сбрасываем счетчик нажатий
-            clickCount = 0;
-        }
+                // Сбрасываем счетчик нажатий
+                clickCount = 0;
+            }
+        }       
     }
 
     private string FormatPrice(float value)
@@ -87,8 +94,13 @@ public class CarMass : MonoBehaviour
 
     private void UpdateTexts()
     {
-        priceText.text = FormatPrice(price);
-        multiplierText.text = "+" + FormatPrice(multiplier);
+        priceText.text = FormatPrice(priceCarMass);
+        multiplierText.text = "+" + FormatPrice(multiplierCarMass);
+    }
+
+    public void TriggerOnUpdateProgressDataCarMass()
+    {
+        OnUpdateProgressData?.Invoke(priceCarMass, multiplierCarMass);
     }
 
     private void AdYandex()

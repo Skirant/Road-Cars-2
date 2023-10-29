@@ -1,5 +1,4 @@
 using DG.Tweening;
-using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -11,12 +10,16 @@ public class CoinRewardManager : MonoBehaviour
     [SerializeField] private Quaternion[] InitialRotation;
     [SerializeField] private int CoinNo;
 
-    private int coinCount;
+    [Header("’ & Y ImageCoin")]
+    //кординаты монеты
+    [SerializeField] private float xOffsetImageCoin; [SerializeField] private float yOffsetImageCoin;
+
+    private bool update = true;
 
     private void Start()
     {
         InitialPos = new Vector3[CoinNo];
-        InitialRotation= new Quaternion[CoinNo];
+        InitialRotation = new Quaternion[CoinNo];
 
         PlayerPrefs.DeleteAll();
 
@@ -38,6 +41,8 @@ public class CoinRewardManager : MonoBehaviour
 
     public void RewardPileOfCoind(int noCoin)
     {
+        if (!update) return;
+
         Reset();
 
         var delay = 0f;
@@ -51,7 +56,11 @@ public class CoinRewardManager : MonoBehaviour
             child.DOScale(endValue: 1f, duration: 0.3f).SetDelay(delay).SetEase(Ease.OutBack);
 
             // »змените координаты конечной точки, чтобы монеты исчезали раньше
-            child.GetComponent<RectTransform>().DOAnchorPos(endValue: new Vector2(x: 219f, y: 476f), duration: 0.8f).SetDelay(delay + 0.5f).SetEase(Ease.InBack);
+            RectTransform canvasRectTransform = PileOfCoinParent.GetComponentInParent<Canvas>().GetComponent<RectTransform>();
+            Vector2 rightTopCorner = new Vector2(canvasRectTransform.rect.width / 2f, canvasRectTransform.rect.height / 2f);
+
+            Vector2 finalPosition = rightTopCorner + new Vector2(xOffsetImageCoin, yOffsetImageCoin);
+            child.GetComponent<RectTransform>().DOAnchorPos(endValue: finalPosition, duration: 0.8f).SetDelay(delay + 0.5f).SetEase(Ease.InBack);
 
             child.DORotate(Vector3.zero, duration: 0.5f).SetDelay(delay + 0.5f).SetEase(Ease.Flash)/*.OnComplete(CountCoinsByComplete)*/;
 
@@ -61,30 +70,6 @@ public class CoinRewardManager : MonoBehaviour
             delay += 0.1f;
         }
 
-        //StartCoroutine(routine: CountCoins(coinNo: 10));
+        update = false;
     }
-
-    /*void CountCoinsByComplete()
-    {
-        coinCount += 1;
-        Counter.text = coinCount.ToString();
-    }*/
-
-    /*IEnumerator CountCoins(int coinNo)
-    {
-        yield return new WaitForSecondsRealtime(time: 0.5f);
-
-        var timer = 0f;
-
-        for(int i = 0; i<coinNo; i++)
-        {
-            PlayerPrefs.SetInt("CountCoin", PlayerPrefs.GetInt(key: "CountCoin") + 1);
-
-            Counter.text = PlayerPrefs.GetInt(key: "CountCoin").ToString();
-
-            timer += 0.01f;
-
-            yield return new WaitForSecondsRealtime(timer);
-        }
-    }*/
 }

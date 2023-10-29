@@ -1,19 +1,31 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ZoneIndicator : MonoBehaviour
 {
     public RectTransform pointer;
-    public TextMeshProUGUI zoneText;
     public RectTransform[] zones;
+
+    public TextMeshProUGUI zoneText;
 
     public float speed = 5f;
     public float minPositionX;
     public float maxPositionX;
+
     private float startTime;
 
-    public CoinManager coinManager;
     public float[] zoneMultipliers;
+
+    public CoinManager coinManager;   
+
+    private bool update = true;
+
+    [SerializeField] Button _buttonAd;
+
+    public CarMass CarMassInstance;
+    public ResellPrice ResellPriceInstance;
+    public PlayerModifier PlayerModifierInstance;
 
     private void Start()
     {
@@ -38,9 +50,16 @@ public class ZoneIndicator : MonoBehaviour
         if (closestZoneIndex != -1)
         {
             zoneText.text = zones[closestZoneIndex].name;
+            if (update)
+            {
+                coinManager.UpdateDisplayedCoins(zoneMultipliers[closestZoneIndex]); // Add this line
+            }            
         }
 
-        Pointer();
+        if (update)
+        {
+            Pointer();
+        }       
     }
 
     private void Pointer()
@@ -52,6 +71,8 @@ public class ZoneIndicator : MonoBehaviour
 
     public void OnButtonClick()
     {
+        if (!update) return;
+
         float minDistance = float.MaxValue;
         int closestZoneIndex = -1;
 
@@ -65,11 +86,19 @@ public class ZoneIndicator : MonoBehaviour
             }
         }
 
-        if (closestZoneIndex != -1)
-        {
-            coinManager.MultiplyMoney(zoneMultipliers[closestZoneIndex]);
-        }
+        coinManager.MultiplyMoney(zoneMultipliers[closestZoneIndex]);
+        _buttonAd.interactable = false;
 
+        SaveProgessGame();
 
+        // After running the button logic, set update to false
+        update = false;
+    }
+
+    private void SaveProgessGame()
+    {
+        CarMassInstance.TriggerOnUpdateProgressDataCarMass();
+        ResellPriceInstance.TriggerOnUpdateProgressDataResellPrice();
+        PlayerModifierInstance.SaveProgressWeightPlayer();
     }
 }

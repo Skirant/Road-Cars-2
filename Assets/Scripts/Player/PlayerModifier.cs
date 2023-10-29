@@ -4,6 +4,7 @@ using UnityEngine;
 public class PlayerModifier : MonoBehaviour
 {
     [SerializeField] int _weight;
+    [SerializeField] int _weightInGame = 0;
     [SerializeField] TextMeshProUGUI _textWeight;
     //[SerializeField] int _damage;
     //[SerializeField] int _healthPlayer;
@@ -25,6 +26,11 @@ public class PlayerModifier : MonoBehaviour
         TextWeight();
     }
 
+    public void AddWeightGate(int value)
+    {
+        _weightInGame += value;
+    }
+
     public void SetWeight(int value)
     {
         if (value <= 0)
@@ -34,6 +40,7 @@ public class PlayerModifier : MonoBehaviour
         else
         {
             _weight = value;
+            _weightInGame = value;
         }
 
         TextWeight();
@@ -102,5 +109,8 @@ public class PlayerModifier : MonoBehaviour
         return formattedValue;
     }
 
-
+    public void SaveProgressWeightPlayer()
+    {
+        Progress.Instance.Weight = _weightInGame;
+    }
 }
