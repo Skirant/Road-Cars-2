@@ -1,26 +1,34 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static Progress;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] GameObject _finishWindow;
+    [SerializeField] TextMeshProUGUI _textLevel;
 
-    [SerializeField] TextMeshProUGUI _textLevel;   
-
-    [SerializeField] int _level;
-
+    public int _level;
     public CoinManager coinManager;
+
+    public static event Action OnLevelRestarted;
+
+    private void OnEnable()
+    {
+        Progress.OnLoadComplete += LoadFromProgress;
+    }
+
+    private void OnDisable()
+    {
+        Progress.OnLoadComplete -= LoadFromProgress;
+    }
 
     private void Start()
     {
-        _level = Progress.Instance.LevelNumber;
-
-        Debug.Log("Current level: " + _level);
-
-        _textLevel.text = "LEVEL " + _level.ToString();
-    }    
+        LoadFromProgress();
+    }
 
     public void ShowFinishWindow()
     {
@@ -29,9 +37,12 @@ public class GameManager : MonoBehaviour
 
     public void NextLevel()
     {
-        _level += 1;
-
+        _level = _level + 1;
+        Progress.Instance.PlayerInfo.LevelNumber = _level;
+        coinManager.ButtonOff();
         coinManager.NoThanks();
+
+        DataHolder.ProgressInstance.MySave();
 
         StartCoroutine(RestartLevelWithDelay(2.0f));
     }
@@ -39,7 +50,12 @@ public class GameManager : MonoBehaviour
     private IEnumerator RestartLevelWithDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        Progress.Instance.LevelNumber = _level;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);       
-    }    
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    private void LoadFromProgress()
+    {
+        _level = Progress.Instance.PlayerInfo.LevelNumber;
+        _textLevel.text = "LEVEL " + _level.ToString();
+    }
 }

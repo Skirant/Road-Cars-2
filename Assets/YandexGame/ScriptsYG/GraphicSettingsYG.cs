@@ -59,12 +59,12 @@ namespace YG
         private void OnEnable() => YandexGame.SwitchLangEvent += SwitchLanguage;
         private void OnDisable() => YandexGame.SwitchLangEvent -= SwitchLanguage;
 
-        public static Action<int> onQualityChange;
+        public static Action onQualityChange;
 
         public void SetQuality()
         {
             QualitySettings.SetQualityLevel(dropdown.value);
-            onQualityChange?.Invoke(dropdown.value);
+            onQualityChange?.Invoke();
         }
 
         void SwitchLanguage(string lang)

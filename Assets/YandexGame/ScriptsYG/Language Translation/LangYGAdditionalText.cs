@@ -37,6 +37,8 @@ namespace YG
 
         private void DoAssignAdditionalText()
         {
+            langYG.AssignTranslate();
+
             if (side == Side.Left)
             {
                 if (langYG.textLComponent)

@@ -1,4 +1,6 @@
 ﻿
+using UnityEngine;
+
 namespace YG
 {
     [System.Serializable]
@@ -16,13 +18,6 @@ namespace YG
         public string newPlayerName = "Hello!";
         public bool[] openLevels = new bool[3];
 
-        // Ваши сохранения
-
-        // ...
-
-        // Поля (сохранения) можно удалять и создавать новые. При обновлении игры сохранения ломаться не должны
-
-
         // Вы можете выполнить какие то действия при загрузке сохранений
         public SavesYG()
         {
@@ -30,5 +25,15 @@ namespace YG
 
             openLevels[1] = true;
         }
+
+        public int Coins = 0;
+        public int _price = 10;
+        public int Weight = 100;
+        public int HealthBarrir = 50;
+        public int LevelNumber = 1;
+        public float CarMassPrice = 100;
+        public float CarMassMultiplier = 1f;
+        public float ResellPricePrice = 100;
+        public float ResellPriceMultiplier = 1.1f;
     }
 }

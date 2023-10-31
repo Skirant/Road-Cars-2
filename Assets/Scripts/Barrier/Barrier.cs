@@ -8,10 +8,21 @@ public class Barrier: MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI _healthText;
 
+    [SerializeField] private GameManager gameManager;
+
+    private void OnEnable()
+    {
+        Progress.OnLoadComplete += LoadFromProgress;
+    }
+
+    private void OnDisable()
+    {
+        Progress.OnLoadComplete -= LoadFromProgress;
+    }
+
     private void Start()
     {
-        SetWeight(Progress.Instance.HealthBarrir);
-        UpdateHP();
+        LoadFromProgress();
     }
 
     [System.Obsolete]
@@ -31,6 +42,7 @@ public class Barrier: MonoBehaviour
             playerModifier.TakeDamage(playerDamage);
 
             UpdateHP();
+
             SaveToProgress();
         }
     }
@@ -42,18 +54,33 @@ public class Barrier: MonoBehaviour
 
     public void SetWeight(int value)
     {
-        if(value <= 0)
+        if (value <= 0)
         {
-            healthBarrier = 1;
+            healthBarrier = gameManager._level * 100;
         }
         else
         {
             healthBarrier = value;
-        }        
+        }
+
+        SaveToProgress();
     }
 
     public void SaveToProgress()
     {
-        Progress.Instance.HealthBarrir = healthBarrier;
+        if(healthBarrier > 0)
+        {
+            Progress.Instance.PlayerInfo.HealthBarrir = healthBarrier;
+        }
+        else
+        {
+            Progress.Instance.PlayerInfo.HealthBarrir = gameManager._level*100;
+        }
+    }
+
+    public void LoadFromProgress()
+    {
+        SetWeight(Progress.Instance.PlayerInfo.HealthBarrir);
+        UpdateHP();
     }
 }

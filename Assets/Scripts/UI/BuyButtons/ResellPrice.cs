@@ -1,10 +1,11 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using YG;
 using static CarMass;
 
 public class ResellPrice : MonoBehaviour
-{  
+{
     public TextMeshProUGUI priceText;
     public TextMeshProUGUI multiplierText;
     public TextMeshProUGUI AdGet;
@@ -19,15 +20,30 @@ public class ResellPrice : MonoBehaviour
     // Добавляем счетчик нажатий
     private int clickCount = 0;
 
-    public delegate void UpdateResellData(float priceResellPrice, float multiplierResellPrice);
-    public static event UpdateResellData OnUpdateResellData;
+    private void OnEnable()
+    {
+        Progress.OnLoadComplete += LoadFromProgress;
+    }
+
+    private void OnDisable()
+    {
+        Progress.OnLoadComplete -= LoadFromProgress;
+    }
 
     private void Start()
-    {   
-        priceResellPrice = Progress.Instance.ResellPricePrice;
-        multiplierResellPrice = Progress.Instance.ResellPriceMultiplier;
+    {
+        LoadFromProgress();
+    }
 
+    private void LoadFromProgress()
+    {
+        priceResellPrice = Progress.Instance.PlayerInfo.ResellPricePrice;
+        multiplierResellPrice = Progress.Instance.PlayerInfo.ResellPriceMultiplier;
+
+        // Удаляем все существующие слушатели событий перед добавлением нового
+        increaseButton.onClick.RemoveAllListeners();
         increaseButton.onClick.AddListener(OnButtonClick);
+
         UpdateTexts();
     }
 
@@ -38,21 +54,31 @@ public class ResellPrice : MonoBehaviour
 
         if (coinManager.RealCoinInThisLevel >= (int)priceResellPrice)
         {
-            coinManager.SpendMoney((int)priceResellPrice);
-            coinManager.UpdatePriceCoin(multiplierResellPrice);
-            multiplierResellPrice += 0.1f;
-            priceResellPrice *= 2.5f;
-            UpdateTexts();
-
             // Если нажатие второе, переключаем видимость TextMeshProUGUI
             if (clickCount == 2)
             {
                 priceText.gameObject.SetActive(false);
                 AdGet.gameObject.SetActive(true);
 
-                // Сбрасываем счетчик нажатий
-                clickCount = 0;
+                coinManager.SpendMoney((int)priceResellPrice);
+                coinManager.UpdatePriceCoin(multiplierResellPrice);
             }
+            else if (clickCount >= 3)
+            {
+                YandexGame.RewVideoShow(0);
+
+                multiplierResellPrice += 0.1f;
+                priceResellPrice *= 2.5f;
+            }
+            else
+            {
+                coinManager.SpendMoney((int)priceResellPrice);
+                coinManager.UpdatePriceCoin(multiplierResellPrice);
+                multiplierResellPrice += 0.1f;
+                priceResellPrice *= 2.5f;
+            }
+            TriggerOnUpdateProgressDataResellPrice();
+            UpdateTexts();
         }
     }
 
@@ -98,6 +124,7 @@ public class ResellPrice : MonoBehaviour
 
     public void TriggerOnUpdateProgressDataResellPrice()
     {
-        OnUpdateResellData?.Invoke(priceResellPrice, multiplierResellPrice);
+        Progress.Instance.PlayerInfo.ResellPricePrice = priceResellPrice;
+        Progress.Instance.PlayerInfo.ResellPriceMultiplier = multiplierResellPrice;
     }
 }

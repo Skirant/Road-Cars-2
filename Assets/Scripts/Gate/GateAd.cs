@@ -1,4 +1,5 @@
 using UnityEngine;
+using YG;
 
 public class GateAd : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class GateAd : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         PlayerImprovement playerImprovement = other.attachedRigidbody.GetComponent<PlayerImprovement>();
+
+        YandexGame.RewVideoShow(0);
 
         if (playerImprovement)
         {

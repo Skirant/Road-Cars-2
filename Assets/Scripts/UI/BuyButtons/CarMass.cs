@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
+using YG;
 
 public class CarMass : MonoBehaviour
 {
@@ -20,16 +20,19 @@ public class CarMass : MonoBehaviour
     // Добавляем счетчик нажатий
     private int clickCount = 0;
 
-    public delegate void UpdateProgressData(float price, float multiplier);
-    public static event UpdateProgressData OnUpdateProgressData;
+    private void OnEnable()
+    {
+        Progress.OnLoadComplete += LoadFromProgress;
+    }
+
+    private void OnDisable()
+    {
+        Progress.OnLoadComplete -= LoadFromProgress;
+    }
 
     private void Start()
-    {       
-        priceCarMass = Progress.Instance.CarMassPrice;
-        multiplierCarMass = Progress.Instance.CarMassMultiplier;
-
-        increaseButton.onClick.AddListener(OnButtonClick);
-        UpdateTexts();
+    {
+        LoadFromProgress();
     }
 
     private void OnButtonClick()
@@ -39,23 +42,38 @@ public class CarMass : MonoBehaviour
 
         if (coinManager.RealCoinInThisLevel >= (int)priceCarMass)
         {
-            coinManager.SpendMoney((int)priceCarMass);
-            playerModifier.AddWeight((int)multiplierCarMass);
-            playerModifier.AddWeightGate((int)multiplierCarMass);
-            multiplierCarMass *= 2.25f;
-            priceCarMass *= 2f;
-            UpdateTexts();
-
             // Если нажатие второе, переключаем видимость TextMeshProUGUI
             if (clickCount == 2)
             {
                 priceText.gameObject.SetActive(false);
                 AdGet.gameObject.SetActive(true);
 
-                // Сбрасываем счетчик нажатий
-                clickCount = 0;
+                coinManager.SpendMoney((int)priceCarMass);
+                playerModifier.AddWeight((int)multiplierCarMass);
+                playerModifier.AddWeightGate((int)multiplierCarMass);
             }
-        }       
+            if (clickCount >= 3)
+            {
+                YandexGame.RewVideoShow(0);
+
+                playerModifier.AddWeight((int)multiplierCarMass);
+                playerModifier.AddWeightGate((int)multiplierCarMass);
+                multiplierCarMass *= 2.25f;
+                priceCarMass *= 2f;
+            }
+            else
+            {
+                coinManager.SpendMoney((int)priceCarMass);
+                playerModifier.AddWeight((int)multiplierCarMass);
+                playerModifier.AddWeightGate((int)multiplierCarMass);
+                multiplierCarMass *= 2.25f;
+                priceCarMass *= 2f;
+            }
+
+            TriggerOnUpdateProgressDataCarMass();
+
+            UpdateTexts();
+        }
     }
 
     private string FormatPrice(float value)
@@ -100,11 +118,19 @@ public class CarMass : MonoBehaviour
 
     public void TriggerOnUpdateProgressDataCarMass()
     {
-        OnUpdateProgressData?.Invoke(priceCarMass, multiplierCarMass);
+        Progress.Instance.PlayerInfo.CarMassPrice = priceCarMass;
+        Progress.Instance.PlayerInfo.CarMassMultiplier = multiplierCarMass;
     }
 
-    private void AdYandex()
+    public void LoadFromProgress()
     {
+        priceCarMass = Progress.Instance.PlayerInfo.CarMassPrice;
+        multiplierCarMass = Progress.Instance.PlayerInfo.CarMassMultiplier;
 
+        // Удаление всех слушателей перед добавлением нового
+        increaseButton.onClick.RemoveAllListeners();
+        increaseButton.onClick.AddListener(OnButtonClick);
+
+        UpdateTexts();
     }
 }

@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using YG;
 
 public class PlayerModifier : MonoBehaviour
 {
@@ -14,9 +15,19 @@ public class PlayerModifier : MonoBehaviour
         get { return _weight; }
     }
 
+    private void OnEnable()
+    {
+        Progress.OnLoadComplete += LoadFromProgress;
+    }
+
+    private void OnDisable()
+    {
+        Progress.OnLoadComplete -= LoadFromProgress;
+    }
+
     private void Start()
     {
-        SetWeight(Progress.Instance.Weight);
+        LoadFromProgress();
     }
 
     public void AddWeight(int value)
@@ -29,6 +40,7 @@ public class PlayerModifier : MonoBehaviour
     public void AddWeightGate(int value)
     {
         _weightInGame += value;
+        SaveProgressWeightPlayer();
     }
 
     public void SetWeight(int value)
@@ -111,6 +123,12 @@ public class PlayerModifier : MonoBehaviour
 
     public void SaveProgressWeightPlayer()
     {
-        Progress.Instance.Weight = _weightInGame;
+        Progress.Instance.PlayerInfo.Weight = _weightInGame;
+    }
+
+    private void LoadFromProgress()
+    {
+        SetWeight(Progress.Instance.PlayerInfo.Weight);
+        print(Progress.Instance.PlayerInfo.Weight);
     }
 }

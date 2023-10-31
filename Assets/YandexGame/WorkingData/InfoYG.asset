@@ -21,6 +21,7 @@ MonoBehaviour:
     name: Player this
     uniqueID: 000
     photo: https://justplaygames.ru/public/icon_player.png
+  autoGameReadyAPI: 1
   AdWhenLoadingScene: 1
   showFirstAd: 0
   rewardedAfterClosing: 1
@@ -125,7 +126,7 @@ MonoBehaviour:
     thisPlayer:
       rank: 0
       score: 0
-  - technoName: time
+  - technoName: time1
     entries: 'Test LeaderBoard
 
       Name: time

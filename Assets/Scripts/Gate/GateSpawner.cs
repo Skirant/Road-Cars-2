@@ -40,7 +40,7 @@ public class GateSpawner : MonoBehaviour
             return;
         }
 
-        int currentLevel = Progress.Instance.LevelNumber; // Используйте LevelNumber из Progress
+        int currentLevel = Progress.Instance.PlayerInfo.LevelNumber; // Используйте LevelNumber из Progress
         bool isEvenLevel = currentLevel % 2 == 0;
         int specialPrefabSpawnPointIndex = isEvenLevel ? Random.Range(3, spawnPoints.Count) : -1;
 

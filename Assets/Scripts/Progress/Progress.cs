@@ -1,16 +1,21 @@
-using System.Diagnostics;
+using System;
 using UnityEngine;
+using YG;
 
-public class Progress : MonoBehaviour
+[System.Serializable]
+public class PlayerInfo
 {
     [Header("$CoinManager")]
     public int Coins;
+    public int _price;
 
     [Header("$PlayerModifier")]
     public int Weight;
 
-    [Space]
+    [Header("$Barrier")]
     public int HealthBarrir;
+
+    [Header("$GameManager")]
     public int LevelNumber;
 
     [Header("$CarMass")]
@@ -20,19 +25,20 @@ public class Progress : MonoBehaviour
     [Header("$ResellPrice")]
     public float ResellPricePrice;
     public float ResellPriceMultiplier;
+}
+
+public class Progress : MonoBehaviour
+{
+    public delegate void LoadCompleteHandler();
+    public static event LoadCompleteHandler OnLoadComplete;
+
+    public PlayerInfo PlayerInfo;
 
     public static Progress Instance;
 
-    private void OnEnable()
+    public class DataHolder
     {
-        CarMass.OnUpdateProgressData += UpdateProgressData;
-        ResellPrice.OnUpdateResellData += UpdateResellData;
-    }
-
-    private void OnDisable()
-    {
-        CarMass.OnUpdateProgressData -= UpdateProgressData;
-        ResellPrice.OnUpdateResellData -= UpdateResellData;
+        public static Progress ProgressInstance;
     }
 
     private void Awake()
@@ -42,6 +48,7 @@ public class Progress : MonoBehaviour
             transform.parent = null;
             DontDestroyOnLoad(gameObject);
             Instance = this;
+            DataHolder.ProgressInstance = this;
         }
         else
         {
@@ -49,14 +56,44 @@ public class Progress : MonoBehaviour
         }
     }
 
-    private void UpdateProgressData(float price, float multiplier)
+    private void OnEnable()
     {
-        CarMassPrice = price;
-        CarMassMultiplier = multiplier;
+        YandexGame.GetDataEvent += GetLoad;
     }
-    private void UpdateResellData(float priceResellPrice, float multiplierResellPrice)
+
+    private void OnDisable()
     {
-        ResellPricePrice = priceResellPrice;
-        ResellPriceMultiplier = multiplierResellPrice;
+        YandexGame.GetDataEvent -= GetLoad;
+    }
+
+    public void MySave()
+    {
+        YandexGame.savesData.Coins = PlayerInfo.Coins;
+        YandexGame.savesData._price = PlayerInfo._price;
+        YandexGame.savesData.Weight = PlayerInfo.Weight;
+        YandexGame.savesData.HealthBarrir = PlayerInfo.HealthBarrir;
+        YandexGame.savesData.LevelNumber = PlayerInfo.LevelNumber;
+        YandexGame.savesData.CarMassPrice = PlayerInfo.CarMassPrice;
+        YandexGame.savesData.CarMassMultiplier = PlayerInfo.CarMassMultiplier;
+        YandexGame.savesData.ResellPricePrice = PlayerInfo.ResellPricePrice;
+        YandexGame.savesData.ResellPriceMultiplier = PlayerInfo.ResellPriceMultiplier;
+
+        YandexGame.SaveProgress();
+    }
+
+    public void GetLoad()
+    {
+        PlayerInfo.Coins = YandexGame.savesData.Coins;
+        PlayerInfo._price = YandexGame.savesData._price;
+        PlayerInfo.Weight = YandexGame.savesData.Weight;
+        PlayerInfo.HealthBarrir = YandexGame.savesData.HealthBarrir;
+        PlayerInfo.LevelNumber = YandexGame.savesData.LevelNumber;
+        PlayerInfo.CarMassPrice = YandexGame.savesData.CarMassPrice;
+        PlayerInfo.CarMassMultiplier = YandexGame.savesData.CarMassMultiplier;
+        PlayerInfo.ResellPricePrice = YandexGame.savesData.ResellPricePrice;
+        PlayerInfo.ResellPriceMultiplier = YandexGame.savesData.ResellPriceMultiplier;
+
+        OnLoadComplete?.Invoke();
     }
 }
+

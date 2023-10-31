@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using YG;
 
 public class CoinManager : MonoBehaviour
 {
@@ -12,18 +13,30 @@ public class CoinManager : MonoBehaviour
 
     [SerializeField] int _priceCoin = 10;
 
-    public Button noThanksButton;
+    [Space]
+    public NoThanksButton noThanksButton;
+
+    private void OnEnable()
+    {
+        Progress.OnLoadComplete += LoadFromProgress;
+    }
+
+    private void OnDisable()
+    {
+        Progress.OnLoadComplete -= LoadFromProgress;
+    }
 
     private void Start()
     {
-        NumberOfCoins = Progress.Instance.Coins;
-        RealCoinInThisLevel = Progress.Instance.Coins;
+        LoadFromProgress();
         MoneyUpdate();
     }
 
     public void UpdatePriceCoin(float multiplier)
     {
         _priceCoin = Mathf.RoundToInt(_priceCoin * multiplier);
+
+        SaveToProgress();
     }
 
     public void AddOne()
@@ -31,15 +44,15 @@ public class CoinManager : MonoBehaviour
         RealCoinInThisLevel += _priceCoin;
         CoinsAddInLevel += _priceCoin;
         MoneyUpdate();
-    }   
+    }
 
     public void SpendMoney(int value)
     {
-        if(RealCoinInThisLevel >= value)
+        if (RealCoinInThisLevel >= value)
         {
             NumberOfCoins -= value;
             RealCoinInThisLevel -= value;
-        }        
+        }
         MoneyUpdate();
     }
 
@@ -53,13 +66,18 @@ public class CoinManager : MonoBehaviour
     }
 
     public void NoThanks()
-    {    
+    {
         NumberOfCoins += CoinsAddInLevel;
         _textCoin.text = FormatWeight(NumberOfCoins);
 
-        SaveToProgress();
+        ButtonOff();
 
-        noThanksButton.interactable = false;
+        SaveToProgress();
+    }
+
+    public void ButtonOff()
+    {
+        noThanksButton.ButtonOff();
     }
 
     public void MoneyUpdate()
@@ -82,22 +100,22 @@ public class CoinManager : MonoBehaviour
         if (absValue >= 1000000000)
         {
             floatValue /= 1000000;
-            formattedValue = floatValue.ToString("F0") + "B";
+            formattedValue = floatValue.ToString("F1") + "B";
         }
         else if (absValue >= 1000000)
         {
             floatValue /= 1000000;
-            formattedValue = floatValue.ToString("F0") + "M";
+            formattedValue = floatValue.ToString("F1") + "M";
         }
         else if (absValue >= 100000)
         {
             floatValue /= 100000;
-            formattedValue = floatValue.ToString("F0") + "KK";
+            formattedValue = floatValue.ToString("F1") + "KK";
         }
         else if (absValue >= 1000)
         {
             floatValue /= 1000;
-            formattedValue = floatValue.ToString("F0") + "K";
+            formattedValue = floatValue.ToString("F1") + "K";
         }
         else
         {
@@ -109,6 +127,16 @@ public class CoinManager : MonoBehaviour
 
     public void SaveToProgress()
     {
-        Progress.Instance.Coins = NumberOfCoins;
+        Progress.Instance.PlayerInfo.Coins = NumberOfCoins;
+        Progress.Instance.PlayerInfo._price = _priceCoin;
+    }
+
+    public void LoadFromProgress()
+    {
+        NumberOfCoins = Progress.Instance.PlayerInfo.Coins;
+        RealCoinInThisLevel = Progress.Instance.PlayerInfo.Coins;
+        _priceCoin = Progress.Instance.PlayerInfo._price;
+
+        MoneyUpdate();
     }
 }

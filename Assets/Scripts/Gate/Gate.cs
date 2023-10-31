@@ -71,7 +71,7 @@ public class Gate : MonoBehaviour
     private void GenerateRandomValue()
     {
         float randomPercentage = Random.Range(0f, 1f);
-        int weightPercentage = progress.Weight;
+        int weightPercentage = progress.PlayerInfo.Weight;
 
         if (randomPercentage < 0.525f) // 52.5% вероятность
         {

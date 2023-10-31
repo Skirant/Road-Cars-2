@@ -17,9 +17,9 @@ public class Shop : MonoBehaviour
         if(_coinManager.NumberOfCoins >= 20)
         {
             _coinManager.SpendMoney(20);
-            Progress.Instance.Coins = _coinManager.NumberOfCoins;
-            Progress.Instance.Weight += 25;
-            _playerModifier.SetWeight(Progress.Instance.Weight);
+            Progress.Instance.PlayerInfo.Coins = _coinManager.NumberOfCoins;
+            Progress.Instance.PlayerInfo.Weight += 25;
+            _playerModifier.SetWeight(Progress.Instance.PlayerInfo.Weight);
         }
     }
 }

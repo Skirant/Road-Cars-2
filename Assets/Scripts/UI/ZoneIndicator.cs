@@ -1,6 +1,8 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using YG;
+using static Progress;
 
 public class ZoneIndicator : MonoBehaviour
 {
@@ -19,9 +21,10 @@ public class ZoneIndicator : MonoBehaviour
 
     public CoinManager coinManager;   
 
-    private bool update = true;
+    public bool update = true;
 
     [SerializeField] Button _buttonAd;
+    [SerializeField] Button _buttonNoThanks;
 
     public CarMass CarMassInstance;
     public ResellPrice ResellPriceInstance;
@@ -73,6 +76,8 @@ public class ZoneIndicator : MonoBehaviour
     {
         if (!update) return;
 
+        YandexGame.RewVideoShow(0);
+
         float minDistance = float.MaxValue;
         int closestZoneIndex = -1;
 
@@ -89,16 +94,9 @@ public class ZoneIndicator : MonoBehaviour
         coinManager.MultiplyMoney(zoneMultipliers[closestZoneIndex]);
         _buttonAd.interactable = false;
 
-        SaveProgessGame();
-
         // After running the button logic, set update to false
         update = false;
-    }
 
-    private void SaveProgessGame()
-    {
-        CarMassInstance.TriggerOnUpdateProgressDataCarMass();
-        ResellPriceInstance.TriggerOnUpdateProgressDataResellPrice();
-        PlayerModifierInstance.SaveProgressWeightPlayer();
+        DataHolder.ProgressInstance.MySave();
     }
 }

@@ -38,6 +38,8 @@ namespace YG
         public PlayerInfoSimulation playerInfoSimulation;
 #endif
 
+        public bool autoGameReadyAPI = true;
+
         [Header("———————  Advertisement  ———————")]
 
         [Tooltip("Показывать рекламу при переключении сцены? (после загрузки сцен)\n\nПо умолчанию = true — это значит, что показ рекламы будет вызываться при загрузке любой сцены в игре. Значение false — реклама не будет показываться при загрузке сцен.")]
@@ -63,6 +65,9 @@ namespace YG
 #if UNITY_EDITOR
         [Tooltip("Длительность симуляции показа рекламы."), Min(0)]
         public float durationOfAdSimulation = 0.5f;
+
+        [Tooltip("Задержка открытия полноэкранной рекламы. Может быть полезна для тестирования уведомления о том, что скоро откроется реклама, перед ёё показом (в момент ожидания рекламы)."), Min(0)]
+        public float delayBeforeShowingAdFullInEditor = 0.0f;
 
         [Tooltip("Нажмите галочку, чтобы сэмулировать вызов ошибки при просмотре рекламы за вознаграждение. (Только для Unity Editor)")]
         public bool testErrorOfRewardedAdsInEditor;
@@ -93,6 +98,9 @@ namespace YG
 
         [Tooltip("Вкл/Выкл лидерборды")]
         public bool leaderboardEnable = true;
+
+        [Tooltip("Записывать рекорд анонимных игроков?")]
+        public bool saveScoreAnonymousPlayers = true;
 
         #region LeaderboardSimulation
 #if UNITY_EDITOR

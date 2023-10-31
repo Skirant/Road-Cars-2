@@ -88,6 +88,7 @@ namespace YG
         public static SavesYG savesData = new SavesYG();
         public static JsonEnvironmentData EnvironmentData = new JsonEnvironmentData();
         public static YandexGame Instance;
+        public static Action onAdNotification;
         #endregion Data Fields
 
         #region Methods
@@ -161,7 +162,7 @@ namespace YG
                 else if (infoYG.playerPhotoSize == InfoYG.PlayerPhotoSize.large)
                     _photoSize = "large";
 
-                InitializationSDK();
+                InitializationGame();
             }
         }
 
@@ -411,12 +412,12 @@ namespace YG
 
         #region Initialization SDK
         [DllImport("__Internal")]
-        private static extern void InitSDK_Internal(string playerPhotoSize, bool scopes);
+        private static extern void InitGame_Internal(string playerPhotoSize, bool scopes, bool gameReadyApi);
 
-        public void InitializationSDK()
+        public void InitializationGame()
         {
 #if !UNITY_EDITOR
-            InitSDK_Internal(_photoSize, infoYG.scopes);
+            InitGame_Internal(_photoSize, infoYG.scopes, infoYG.autoGameReadyAPI);
 #else
             string auth = "resolved";
             string name = Instance.infoYG.playerInfoSimulation.name;
@@ -444,6 +445,22 @@ namespace YG
             SetInitializationSDK(json);
 #endif
         }
+
+        [DllImport("__Internal")]
+        private static extern void GameReadyAPI_Internal();
+
+        public static void GameReadyAPI()
+        {
+            if (!Instance.infoYG.autoGameReadyAPI)
+            {
+#if !UNITY_EDITOR
+                GameReadyAPI_Internal();
+#else
+                Message("Game Ready API");
+#endif
+            }
+        }
+        public void _GameReadyAPI() => GameReadyAPI();
         #endregion Initialization SDK
 
         #region Init Leaderboard
@@ -519,12 +536,12 @@ namespace YG
             if (!nowAdsShow && timerShowAd >= infoYG.fullscreenAdInterval)
             {
                 timerShowAd = 0;
+                onAdNotification?.Invoke();
 #if !UNITY_EDITOR
                 FullAdShow();
 #else
                 Message("Fullscren Ad");
-                OpenFullAd();
-                CloseFullAdInEditor();
+                FullAdInEditor();
 #endif
             }
             else
@@ -536,18 +553,11 @@ namespace YG
         public static void FullscreenShow() => Instance._FullscreenShow();
 
 #if UNITY_EDITOR
-        void CloseFullAdInEditor()
+        private void FullAdInEditor()
         {
-            GameObject errMessage = new GameObject { name = "TestFullAd" };
-            DontDestroyOnLoad(errMessage);
-
-            Canvas canvas = errMessage.AddComponent<Canvas>();
-            canvas.sortingOrder = 32767;
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            errMessage.AddComponent<GraphicRaycaster>();
-            errMessage.AddComponent<RawImage>().color = new Color(0, 1, 0, 0.5f);
-
-            Insides.CallingAnEvent call = errMessage.AddComponent(typeof(Insides.CallingAnEvent)) as Insides.CallingAnEvent;
+            GameObject obj = new GameObject { name = "TestFullAd" };
+            DontDestroyOnLoad(obj);
+            Insides.CallingAnEvent call = obj.AddComponent(typeof(Insides.CallingAnEvent)) as Insides.CallingAnEvent;
             call.StartCoroutine(call.CallingAd(infoYG.durationOfAdSimulation));
         }
 #endif
@@ -563,11 +573,11 @@ namespace YG
 
             if (!nowFullAd && !nowVideoAd)
             {
+                onAdNotification?.Invoke();
 #if !UNITY_EDITOR
                 RewardedShow(id);
 #else
-                OpenVideo();
-                CloseVideoInEditor(id);
+                AdRewardInEditor(id);
 #endif
             }
         }
@@ -575,19 +585,11 @@ namespace YG
         public static void RewVideoShow(int id) => Instance._RewardedShow(id);
 
 #if UNITY_EDITOR
-        void CloseVideoInEditor(int id)
+        private void AdRewardInEditor(int id)
         {
-            GameObject errMessage = new GameObject { name = "TestVideoAd" };
-            DontDestroyOnLoad(errMessage);
-
-            Canvas canvas = errMessage.AddComponent<Canvas>();
-            canvas.sortingOrder = 32767;
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            errMessage.AddComponent<GraphicRaycaster>();
-            errMessage.AddComponent<RawImage>().color = new Color(0, 0, 1, 0.5f);
-            DontDestroyOnLoad(errMessage);
-
-            Insides.CallingAnEvent call = errMessage.AddComponent(typeof(Insides.CallingAnEvent)) as Insides.CallingAnEvent;
+            GameObject obj = new GameObject { name = "TestVideoAd" };
+            DontDestroyOnLoad(obj);
+            Insides.CallingAnEvent call = obj.AddComponent(typeof(Insides.CallingAnEvent)) as Insides.CallingAnEvent;
             call.StartCoroutine(call.CallingAd(infoYG.durationOfAdSimulation, id));
         }
 #endif
@@ -688,8 +690,12 @@ namespace YG
 
         public static void NewLeaderboardScores(string nameLB, int score)
         {
-            if (_leaderboardEnable)
+            if (_leaderboardEnable && auth)
             {
+                if (Instance.infoYG.saveScoreAnonymousPlayers == false &&
+                    playerName == "anonymous")
+                    return;
+
 #if !UNITY_EDITOR
                 Message("New Liderboard Record: " + score);
                 SetLeaderboardScores(nameLB, score);
@@ -701,8 +707,12 @@ namespace YG
 
         public static void NewLBScoreTimeConvert(string nameLB, float secondsScore)
         {
-            if (_leaderboardEnable)
+            if (_leaderboardEnable && auth)
             {
+                if (Instance.infoYG.saveScoreAnonymousPlayers == false &&
+                    playerName == "anonymous")
+                    return;
+
                 int result;
                 int indexComma = secondsScore.ToString().IndexOf(",");
 
@@ -743,6 +753,13 @@ namespace YG
                     technoName = nameLB,
                     entries = "no data",
                     players = new LBPlayerData[1]
+                    {
+                        new LBPlayerData()
+                        {
+                            name = "no data",
+                            photo = null
+                        }
+                    }
                 };
                 onGetLeaderboard?.Invoke(lb);
             }
@@ -773,7 +790,7 @@ namespace YG
                     }
                 }
 
-                if (indexLB > -1)
+                if (indexLB >= 0)
                     onGetLeaderboard?.Invoke(lb[indexLB]);
                 else
                     NoData();
@@ -988,7 +1005,7 @@ namespace YG
                 RewardVideoAd.Invoke();
                 RewardVideoEvent?.Invoke(lastRewardAdID);
             }
-            else if(rewardAdResult == RewardAdResult.Error)
+            else if (rewardAdResult == RewardAdResult.Error)
             {
                 ErrorVideo();
             }
