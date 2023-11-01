@@ -4,7 +4,7 @@ using YG;
 
 public class StartGame : MonoBehaviour
 {
-    public Image Image;
+    public GameObject GameObject;
 
     // Подписываемся на событие GetDataEvent в OnEnable
     private void OnEnable() => YandexGame.GetDataEvent += GetData;
@@ -28,6 +28,6 @@ public class StartGame : MonoBehaviour
     // Ваш метод, который будет запускаться в старте
     public void GetData()
     {
-        Image.enabled = false;
+        GameObject.active = false;
     }
 }

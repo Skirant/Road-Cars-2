@@ -17,7 +17,7 @@ MonoBehaviour:
   playerInfoSimulation:
     authorized: 1
     isMobile: 0
-    language: ru
+    language: en
     name: Player this
     uniqueID: 000
     photo: https://justplaygames.ru/public/icon_player.png
@@ -28,6 +28,7 @@ MonoBehaviour:
   adDisplayCalls: 0
   fullscreenAdInterval: 60
   durationOfAdSimulation: 0.5
+  delayBeforeShowingAdFullInEditor: 0
   testErrorOfRewardedAdsInEditor: 0
   saveCloud: 1
   flush: 0
@@ -35,6 +36,7 @@ MonoBehaviour:
   saveCloudInterval: 5
   saveOnQuitGame: 0
   leaderboardEnable: 1
+  saveScoreAnonymousPlayers: 1
   leaderboardSimulation:
   - technoName: advanced
     entries: 'Test LeaderBoard
@@ -185,7 +187,7 @@ MonoBehaviour:
   languages:
     ru: 1
     en: 1
-    tr: 1
+    tr: 0
     az: 0
     be: 0
     he: 0
@@ -211,7 +213,8 @@ MonoBehaviour:
     de: 0
     hi: 0
   fonts:
-    defaultFont: []
+    defaultFont:
+    - {fileID: 12800000, guid: a1a7e401d58b87a43bebb29797ad9ff8, type: 3}
     ru: []
     en: []
     tr: []
@@ -269,7 +272,7 @@ MonoBehaviour:
     de: []
     hi: []
   fontsSizeCorrect:
-    ru: 
+    ru: 00000000
     en: 
     tr: 
     az: 

@@ -15,7 +15,7 @@ public class CarMass : MonoBehaviour
     public CoinManager coinManager;
 
     private float priceCarMass = 100.0f;
-    private float multiplierCarMass = 1.0f;
+    private float multiplierCarMass = 1.1f;
 
     // Добавляем счетчик нажатий
     private int clickCount = 0;
@@ -49,31 +49,37 @@ public class CarMass : MonoBehaviour
                 AdGet.gameObject.SetActive(true);
 
                 coinManager.SpendMoney((int)priceCarMass);
-                playerModifier.AddWeight((int)multiplierCarMass);
-                playerModifier.AddWeightGate((int)multiplierCarMass);
+                UpdatePrice();
             }
-            if (clickCount >= 3)
-            {
-                YandexGame.RewVideoShow(0);
-
-                playerModifier.AddWeight((int)multiplierCarMass);
-                playerModifier.AddWeightGate((int)multiplierCarMass);
-                multiplierCarMass *= 2.25f;
-                priceCarMass *= 2f;
-            }
-            else
+            else if(clickCount <= 1)
             {
                 coinManager.SpendMoney((int)priceCarMass);
-                playerModifier.AddWeight((int)multiplierCarMass);
-                playerModifier.AddWeightGate((int)multiplierCarMass);
-                multiplierCarMass *= 2.25f;
-                priceCarMass *= 2f;
+                UpdatePrice();
             }
 
             TriggerOnUpdateProgressDataCarMass();
 
             UpdateTexts();
         }
+
+        if (clickCount >= 3)
+        {
+            //YandexGame.RewVideoShow(0);
+
+            UpdatePrice();
+
+            TriggerOnUpdateProgressDataCarMass();
+
+            UpdateTexts();
+        }
+    }
+
+    public void UpdatePrice()
+    {
+        playerModifier.AddWeight((int)multiplierCarMass);
+        playerModifier.AddWeightGate((int)multiplierCarMass);
+        multiplierCarMass *= 1.025f;
+        priceCarMass *= 1.025f;
     }
 
     private string FormatPrice(float value)
@@ -104,7 +110,7 @@ public class CarMass : MonoBehaviour
         }
         else
         {
-            formattedValue = floatValue.ToString("F1");
+            formattedValue = floatValue.ToString("F0");
         }
 
         return formattedValue;

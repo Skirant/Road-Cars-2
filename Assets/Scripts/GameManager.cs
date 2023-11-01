@@ -3,6 +3,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using YG;
 using static Progress;
 
 public class GameManager : MonoBehaviour
@@ -56,6 +57,19 @@ public class GameManager : MonoBehaviour
     private void LoadFromProgress()
     {
         _level = Progress.Instance.PlayerInfo.LevelNumber;
-        _textLevel.text = "LEVEL " + _level.ToString();
+
+        if (YandexGame.EnvironmentData.language == "ru")
+        {
+            _textLevel.text = "УРОВЕНЬ " + _level.ToString();
+        }
+        else if (YandexGame.EnvironmentData.language == "en")
+        {
+            _textLevel.text = "LEVEL " + _level.ToString();
+        }
+        else
+        {
+            // Возможно, вы захотите установить значение по умолчанию, если язык не определен.
+            _textLevel.text = "LEVEL " + _level.ToString();
+        }
     }
 }

@@ -1,0 +1,22 @@
+{
+    "idSave": 1,
+    "isFirstSession": false,
+    "language": "en",
+    "promptDone": false,
+    "money": 1,
+    "newPlayerName": "Hello!",
+    "openLevels": [
+        false,
+        true,
+        false
+    ],
+    "Coins": 0,
+    "_price": 50,
+    "Weight": 10,
+    "HealthBarrir": 50,
+    "LevelNumber": 1,
+    "CarMassPrice": 100.0,
+    "CarMassMultiplier": 1.0,
+    "ResellPricePrice": 100.0,
+    "ResellPriceMultiplier": 1.100000023841858
+}

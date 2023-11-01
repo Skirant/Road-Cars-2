@@ -62,15 +62,11 @@ public class ResellPrice : MonoBehaviour
 
                 coinManager.SpendMoney((int)priceResellPrice);
                 coinManager.UpdatePriceCoin(multiplierResellPrice);
-            }
-            else if (clickCount >= 3)
-            {
-                YandexGame.RewVideoShow(0);
-
                 multiplierResellPrice += 0.1f;
                 priceResellPrice *= 2.5f;
             }
-            else
+           
+            else if (clickCount <= 1) 
             {
                 coinManager.SpendMoney((int)priceResellPrice);
                 coinManager.UpdatePriceCoin(multiplierResellPrice);
@@ -80,6 +76,15 @@ public class ResellPrice : MonoBehaviour
             TriggerOnUpdateProgressDataResellPrice();
             UpdateTexts();
         }
+
+        if (clickCount >= 3)
+        {
+            YandexGame.RewVideoShow(0);
+
+            multiplierResellPrice += 0.1f;
+            priceResellPrice *= 2.5f;
+        }
+
     }
 
     private string FormatPrice(float value)
@@ -110,7 +115,7 @@ public class ResellPrice : MonoBehaviour
         }
         else
         {
-            formattedValue = floatValue.ToString("F1");
+            formattedValue = floatValue.ToString("F0");
         }
 
         return formattedValue;
