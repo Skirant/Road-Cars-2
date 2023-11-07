@@ -32,6 +32,7 @@ public class PlayerImprovement : MonoBehaviour
         int weight = playerModifier.Weight;
         CarPrefabInfo selectedCarInfo = null;
         CarPrefabInfo nextCarInfo = null;
+        CarPrefabInfo nowCar = null;
 
         for (int i = 0; i < carPrefabs.Length; i++)
         {
@@ -41,6 +42,7 @@ public class PlayerImprovement : MonoBehaviour
                 if (i + 1 < carPrefabs.Length)
                 {
                     nextCarInfo = carPrefabs[i + 1];
+                    nowCar = carPrefabs[i];
                 }
             }
             else
@@ -57,6 +59,7 @@ public class PlayerImprovement : MonoBehaviour
 
         if (nextCarInfo != null)
         {
+            progressSlider.minValue = nowCar.weight;
             progressSlider.maxValue = nextCarInfo.weight;
             progressSlider.value = weight;
         }

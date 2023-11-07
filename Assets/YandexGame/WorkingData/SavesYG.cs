@@ -27,7 +27,7 @@ namespace YG
         }
 
         public int Coins = 0;
-        public int _price = 50;
+        public int _price = 30;
         public int Weight = 10;
         public int HealthBarrir = 50;
         public int LevelNumber = 1;

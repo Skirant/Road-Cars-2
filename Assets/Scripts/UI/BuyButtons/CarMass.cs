@@ -1,7 +1,9 @@
+using System.Security.Cryptography;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using YG;
+using YG.Example;
 
 public class CarMass : MonoBehaviour
 {
@@ -23,11 +25,13 @@ public class CarMass : MonoBehaviour
     private void OnEnable()
     {
         Progress.OnLoadComplete += LoadFromProgress;
+        YandexGame.RewardVideoEvent += Rewarded;
     }
 
     private void OnDisable()
     {
         Progress.OnLoadComplete -= LoadFromProgress;
+        YandexGame.RewardVideoEvent -= Rewarded;
     }
 
     private void Start()
@@ -36,50 +40,52 @@ public class CarMass : MonoBehaviour
     }
 
     private void OnButtonClick()
-    {
-        // Увеличиваем счетчик при каждом нажатии
-        clickCount++;
-
+    {      
         if (coinManager.RealCoinInThisLevel >= (int)priceCarMass)
         {
-            // Если нажатие второе, переключаем видимость TextMeshProUGUI
-            if (clickCount == 2)
+            clickCount++;
+
+            if (clickCount == 1)
             {
+                coinManager.SpendMoney((int)priceCarMass);
+
+                UpdatePrice();
+                TriggerOnUpdateProgressDataCarMass();
+                UpdateTexts();
+            }
+            else if (clickCount == 2)
+            {
+                coinManager.SpendMoney((int)priceCarMass);
+
                 priceText.gameObject.SetActive(false);
                 AdGet.gameObject.SetActive(true);
-
-                coinManager.SpendMoney((int)priceCarMass);
+                TriggerOnUpdateProgressDataCarMass();
                 UpdatePrice();
+                UpdateTexts();
             }
-            else if(clickCount <= 1)
-            {
-                coinManager.SpendMoney((int)priceCarMass);
-                UpdatePrice();
-            }
-
-            TriggerOnUpdateProgressDataCarMass();
-
-            UpdateTexts();
         }
 
         if (clickCount >= 3)
         {
-            //YandexGame.RewVideoShow(0);
-
-            UpdatePrice();
-
-            TriggerOnUpdateProgressDataCarMass();
-
-            UpdateTexts();
+            YandexGame.RewVideoShow(0);            
         }
+    }
+
+    void Rewarded(int id)
+    {
+        UpdatePrice();
+        TriggerOnUpdateProgressDataCarMass();
+        UpdateTexts();
     }
 
     public void UpdatePrice()
     {
         playerModifier.AddWeight((int)multiplierCarMass);
         playerModifier.AddWeightGate((int)multiplierCarMass);
-        multiplierCarMass *= 1.025f;
-        priceCarMass *= 1.025f;
+        multiplierCarMass *= 1.05f;
+        priceCarMass *= 1.05f;
+
+        print(clickCount);
     }
 
     private string FormatPrice(float value)
@@ -110,7 +116,7 @@ public class CarMass : MonoBehaviour
         }
         else
         {
-            formattedValue = floatValue.ToString("F0");
+            formattedValue = floatValue.ToString("F1");
         }
 
         return formattedValue;

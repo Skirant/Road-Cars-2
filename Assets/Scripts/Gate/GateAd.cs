@@ -1,5 +1,6 @@
 using UnityEngine;
 using YG;
+using YG.Example;
 
 public class GateAd : MonoBehaviour
 {
@@ -7,21 +8,31 @@ public class GateAd : MonoBehaviour
 
     [SerializeField] DefrmationType _defrmationType;
 
-    [SerializeField] Progress progress;
-
     [SerializeField] float DisableRadius = 5f;
 
-    private void Awake()
+    private PlayerImprovement playerImprovement;
+    private PlayerModifier playerModifier;
+
+    private void OnEnable()
     {
-        progress = FindAnyObjectByType<Progress>();
+        YandexGame.RewardVideoEvent += Rewarded;
+    }
+
+    private void OnDisable()
+    {
+        YandexGame.RewardVideoEvent -= Rewarded;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        PlayerImprovement playerImprovement = other.attachedRigidbody.GetComponent<PlayerImprovement>();
+        playerImprovement = other.attachedRigidbody.GetComponent<PlayerImprovement>();
+        playerModifier = other.attachedRigidbody.GetComponent<PlayerModifier>();
 
         YandexGame.RewVideoShow(0);
+    }
 
+    void Rewarded(int id)
+    {
         if (playerImprovement)
         {
             // Получаем текущий вес игрока
@@ -46,28 +57,12 @@ public class GateAd : MonoBehaviour
             }
         }
 
-
-        PlayerModifier playerModifier = other.attachedRigidbody.GetComponent<PlayerModifier>();
-
         if (playerModifier)
         {
             playerModifier.AddWeight(_value);
         }
 
         Destroy(gameObject);
-
-        if (other.CompareTag("Player"))
-        {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, DisableRadius);
-
-            foreach (Collider collider in colliders)
-            {
-                if (collider.isTrigger && collider.gameObject.CompareTag("Gate"))
-                {
-                    collider.enabled = false;
-                }
-            }
-        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -86,3 +81,4 @@ public class GateAd : MonoBehaviour
         }
     }
 }
+

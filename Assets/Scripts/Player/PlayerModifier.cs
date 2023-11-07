@@ -129,6 +129,6 @@ public class PlayerModifier : MonoBehaviour
     private void LoadFromProgress()
     {
         SetWeight(Progress.Instance.PlayerInfo.Weight);
-        print(Progress.Instance.PlayerInfo.Weight);
+        //print(Progress.Instance.PlayerInfo.Weight);
     }
 }

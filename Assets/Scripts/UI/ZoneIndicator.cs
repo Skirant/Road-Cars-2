@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using YG;
+using YG.Example;
 using static Progress;
 
 public class ZoneIndicator : MonoBehaviour
@@ -29,6 +30,17 @@ public class ZoneIndicator : MonoBehaviour
     public CarMass CarMassInstance;
     public ResellPrice ResellPriceInstance;
     public PlayerModifier PlayerModifierInstance;
+
+    private void OnEnable()
+    {
+        YandexGame.RewardVideoEvent += Rewarded;
+    }
+
+    private void OnDisable()
+    {
+        YandexGame.RewardVideoEvent -= Rewarded;
+    }
+
 
     private void Start()
     {
@@ -77,7 +89,10 @@ public class ZoneIndicator : MonoBehaviour
         if (!update) return;
 
         YandexGame.RewVideoShow(0);
+    }
 
+    void Rewarded(int id)
+    {
         float minDistance = float.MaxValue;
         int closestZoneIndex = -1;
 
@@ -93,6 +108,7 @@ public class ZoneIndicator : MonoBehaviour
 
         coinManager.MultiplyMoney(zoneMultipliers[closestZoneIndex]);
         _buttonAd.interactable = false;
+        FindObjectOfType<AudioManager>().Play("Getting—oins");
 
         // After running the button logic, set update to false
         update = false;

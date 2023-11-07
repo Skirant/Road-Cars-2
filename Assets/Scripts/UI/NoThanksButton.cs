@@ -17,5 +17,6 @@ public class NoThanksButton : MonoBehaviour
         noThanksButton.interactable = false;
         BonussButton.interactable = false;
         ZoneIndicator.update = false;
+        FindObjectOfType<AudioManager>().Play("Getting—oins");
     }
 }

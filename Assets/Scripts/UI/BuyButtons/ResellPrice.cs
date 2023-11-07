@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using YG;
+using YG.Example;
 using static CarMass;
 
 public class ResellPrice : MonoBehaviour
@@ -23,11 +24,13 @@ public class ResellPrice : MonoBehaviour
     private void OnEnable()
     {
         Progress.OnLoadComplete += LoadFromProgress;
+        YandexGame.RewardVideoEvent += Rewarded;
     }
 
     private void OnDisable()
     {
         Progress.OnLoadComplete -= LoadFromProgress;
+        YandexGame.RewardVideoEvent -= Rewarded;
     }
 
     private void Start()
@@ -49,43 +52,47 @@ public class ResellPrice : MonoBehaviour
 
     private void OnButtonClick()
     {
-        // Увеличиваем счетчик при каждом нажатии
-        clickCount++;
-
         if (coinManager.RealCoinInThisLevel >= (int)priceResellPrice)
         {
-            // Если нажатие второе, переключаем видимость TextMeshProUGUI
-            if (clickCount == 2)
+            clickCount++;
+
+            if (clickCount == 1)
             {
+                coinManager.SpendMoney((int)priceResellPrice);
+                coinManager.UpdatePriceCoin(multiplierResellPrice);
+                multiplierResellPrice += 0.1f;
+                priceResellPrice *= 2.5f;
+                TriggerOnUpdateProgressDataResellPrice();
+                UpdateTexts();
+            }
+            else if (clickCount == 2)
+            {
+                coinManager.SpendMoney((int)priceResellPrice);
+                coinManager.UpdatePriceCoin(multiplierResellPrice);
+
                 priceText.gameObject.SetActive(false);
                 AdGet.gameObject.SetActive(true);
 
-                coinManager.SpendMoney((int)priceResellPrice);
-                coinManager.UpdatePriceCoin(multiplierResellPrice);
                 multiplierResellPrice += 0.1f;
                 priceResellPrice *= 2.5f;
+                TriggerOnUpdateProgressDataResellPrice();
+                UpdateTexts();
             }
-           
-            else if (clickCount <= 1) 
-            {
-                coinManager.SpendMoney((int)priceResellPrice);
-                coinManager.UpdatePriceCoin(multiplierResellPrice);
-                multiplierResellPrice += 0.1f;
-                priceResellPrice *= 2.5f;
-            }
-            TriggerOnUpdateProgressDataResellPrice();
-            UpdateTexts();
         }
 
         if (clickCount >= 3)
         {
-            YandexGame.RewVideoShow(0);
-
-            multiplierResellPrice += 0.1f;
-            priceResellPrice *= 2.5f;
+            YandexGame.RewVideoShow(0);           
         }
-
     }
+
+    void Rewarded(int id)
+    {
+        multiplierResellPrice += 0.1f;
+        priceResellPrice *= 2.5f;
+        UpdateTexts();
+    }
+
 
     private string FormatPrice(float value)
     {

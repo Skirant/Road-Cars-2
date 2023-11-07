@@ -5,6 +5,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private float _speed;
     [SerializeField] private Camera _mainCamera; // Ссылка на камеру
     [SerializeField] private float _rotationLimit = 80f; // Ограничение поворота
+    [SerializeField] private float _rotationSpeed = 100f;
 
     private void Update()
     {
@@ -34,6 +35,23 @@ public class PlayerMove : MonoBehaviour
 
                 transform.rotation = Quaternion.Euler(currentEulerAngles);
             }
+        }
+
+        float horizontalInput = Input.GetAxis("Horizontal");
+
+        if (Mathf.Abs(horizontalInput) > 0.1f)
+        {
+            print("111111111111111111");
+
+            float rotationY = horizontalInput * _rotationSpeed * Time.deltaTime;
+
+            // Ограничиваем поворот
+            Vector3 currentEulerAngles = transform.eulerAngles;
+            float targetYRotation = currentEulerAngles.y + rotationY;
+            float clampedYRotation = Mathf.Clamp(targetYRotation, -_rotationLimit, _rotationLimit);
+            currentEulerAngles.y = clampedYRotation;
+
+            transform.rotation = Quaternion.Euler(currentEulerAngles);
         }
     }
 }

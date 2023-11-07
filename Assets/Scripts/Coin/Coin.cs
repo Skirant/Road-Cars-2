@@ -12,6 +12,8 @@ public class Coin : MonoBehaviour
     [System.Obsolete]
     private void OnTriggerEnter(Collider other)
     {
+        FindObjectOfType<AudioManager>().Play("Ñoin");
+
         FindObjectOfType<CoinManager>().AddOne();
         Destroy(gameObject);
     }

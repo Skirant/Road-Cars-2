@@ -33,6 +33,17 @@ public class Gate : MonoBehaviour
 
         if (playerModifier)
         {
+            float _valueSign = Mathf.Sign(_value); // проверяем знак числа :citation[1]
+
+            if (_valueSign == 1f)
+            {
+                FindObjectOfType<AudioManager>().Play("Update");
+            }
+            else if (_valueSign == -1f)
+            {
+                FindObjectOfType<AudioManager>().Play("Decline");
+            }
+
             playerModifier.AddWeight(_value);
         }
 

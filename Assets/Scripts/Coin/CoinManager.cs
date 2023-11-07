@@ -105,17 +105,17 @@ public class CoinManager : MonoBehaviour
         else if (absValue >= 1000000)
         {
             floatValue /= 1000000;
-            formattedValue = floatValue.ToString("F1") + "M";
+            formattedValue = floatValue.ToString("F2") + "M";
         }
         else if (absValue >= 100000)
         {
             floatValue /= 100000;
-            formattedValue = floatValue.ToString("F1") + "KK";
+            formattedValue = floatValue.ToString("F2") + "KK";
         }
         else if (absValue >= 1000)
         {
             floatValue /= 1000;
-            formattedValue = floatValue.ToString("F1") + "K";
+            formattedValue = floatValue.ToString("F2") + "K";
         }
         else
         {
